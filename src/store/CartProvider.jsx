@@ -36,11 +36,20 @@ const cartReducer = (state, action) => {
       };
     }
     case "REMOVE_ITEM": {
-      const index = state.items.findIndex((item) => item.id === action.itemId);
       const updatedItems = [...state.items];
-      const itemRemoved = updatedItems.splice(index, 1);
-      const updatedTotalAmount =
-        state.totalAmount - itemRemoved.price * itemRemoved.amount;
+      const index = updatedItems.findIndex((item) => item.id === action.itemId);
+      const itemToRemove = updatedItems[index];
+
+      if (itemToRemove.amount === 1) {
+        updatedItems.splice(index, 1);
+      } else {
+        updatedItems[index] = {
+          ...itemToRemove,
+          amount: itemToRemove.amount - 1,
+        };
+      }
+
+      const updatedTotalAmount = state.totalAmount - itemToRemove.price;
       return {
         items: updatedItems,
         totalAmount: updatedTotalAmount,
